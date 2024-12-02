@@ -1,4 +1,4 @@
-name: EpicQuest RPG
+name: EpicQuestRPG
 version: '0.1-ALPHA'
 main: EpicQuestsRPG.EpicQuestRPG
 api-version: '1.21'
