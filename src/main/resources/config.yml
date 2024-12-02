@@ -1,0 +1,12 @@
+general:
+  language: "en_US" # Default language
+  enable-economy: true # Toggle custom economy
+  max-quests-per-player: 5 # Limit active quests
+
+classes:
+  default-class: "Warrior" # Fallback class if none chosen
+  class-selection-command: true # Allow `/class` command
+
+economy:
+  currency-name: "Gold"
+  starting-balance: 100

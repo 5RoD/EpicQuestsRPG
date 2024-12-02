@@ -1,0 +1,16 @@
+classes:
+  Warrior:
+    health: 40
+    damage: 10
+    mana: 0
+    abilities:
+      - "ground_slam"
+      - "shield_block"
+
+  Mage:
+    health: 20
+    damage: 5
+    mana: 50
+    abilities:
+      - "fireball"
+      - "ice_blast"

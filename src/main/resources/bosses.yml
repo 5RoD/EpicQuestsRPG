@@ -1,0 +1,11 @@
+bosses:
+  - id: "lava_golem"
+    name: "Lava Golem"
+    health: 500
+    damage: 25
+    abilities:
+      - "lava_explosion"
+      - "summon_minions"
+    loot:
+      - "minecraft:diamond"
+      - "custom_item:magic_crystal"

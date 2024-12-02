@@ -1,0 +1,17 @@
+quests:
+  - id: "zombie-slayer"
+    name: "Zombie Slayer"
+    objectives:
+      - "kill 10 zombies"
+    rewards:
+      experience: 50
+      items:
+        - "minecraft:iron_sword"
+      currency: 20
+  - id: "apple-gatherer"
+    name: "Apple Gatherer"
+    objectives:
+      - "collect 20 apples"
+    rewards:
+      experience: 25
+      currency: 10
