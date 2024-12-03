@@ -11,7 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class EpicQuestRPG extends JavaPlugin {
 
-    private VaultUtil vaultUtil;
+   // private VaultUtil vaultUtil;
     private DataBase dataBase;
 
     @Override
@@ -27,10 +27,10 @@ public final class EpicQuestRPG extends JavaPlugin {
         dataBase.dataConnect();
 
         // Initialize VaultUtil and register commands
-        vaultUtil = new VaultUtil(this); // Pass main plugin reference
+        //vaultUtil = new VaultUtil(this); // Pass main plugin reference
 
-        getCommand("eco").setExecutor((CommandExecutor) vaultUtil);
-        getCommand("ecodeposit").setExecutor((CommandExecutor) vaultUtil);
+//        getCommand("eco").setExecutor((CommandExecutor) vaultUtil);
+//        getCommand("ecodeposit").setExecutor((CommandExecutor) vaultUtil);
     }
 
     @Override

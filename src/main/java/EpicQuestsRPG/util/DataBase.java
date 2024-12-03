@@ -1,9 +1,12 @@
 package EpicQuestsRPG.util;
 
+import EpicQuestsRPG.Player.PlayerManager;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.UUID;
 
 public class DataBase {
 
@@ -35,30 +38,59 @@ public class DataBase {
     }
 
     public void dataConnect() {
-        try {
-            // Connect to MySQL server without specifying a database
-            String url = "jdbc:mysql://" + host + ":" + port + "/?useSSL=" + useSSL + "&autoReconnect=" + autoReconnect;
-            connection = DriverManager.getConnection(url, username, password);
+        Connection tempConnection = null;
 
-            statement = connection.createStatement();
+        try {
+            // Initial connection to the MySQL server (without database)
+            String url = "jdbc:mysql://" + host + ":" + port + "/?useSSL=" + useSSL + "&autoReconnect=" + autoReconnect;
+            tempConnection = DriverManager.getConnection(url, username, password);
+            statement = tempConnection.createStatement();
+
+            // Create the database if it doesn't exist
             String sql = "CREATE DATABASE IF NOT EXISTS " + name;
-            statement.executeUpdate(sql); // Use executeUpdate for DDL statements
+            statement.executeUpdate(sql);
+
             System.out.println("Database created or already exists: " + name);
+
+            // Close the initial connection
+            statement.close();
+            tempConnection.close();
+
+            // Reconnect to the specific database
+            String dbUrl = "jdbc:mysql://" + host + ":" + port + "/" + name + "?useSSL=" + useSSL + "&autoReconnect=" + autoReconnect;
+            connection = DriverManager.getConnection(dbUrl, username, password);
+            statement = connection.createStatement();
+
+            // Create the table if it doesn't exist
+            String sqlTable = """
+            CREATE TABLE IF NOT EXISTS player_data (
+                uuid varchar(36) PRIMARY KEY,
+                player_class VARCHAR(50) NOT NULL,
+                player_current_quest VARCHAR(255),
+                player_money DOUBLE DEFAULT 0.0,
+                player_done_before BOOLEAN DEFAULT FALSE
+            );
+            """;
+            statement.execute(sqlTable);
+            statement.close();
+
+            System.out.println("Table created or already exists: player_data");
 
         } catch (SQLException e) {
             e.printStackTrace(); // Consider using a logging framework
         } finally {
-            // Close resources in the finally block to ensure they are closed even if an exception occurs
+            // Close resources in the finally block
             try {
                 if (statement != null) statement.close();
-                if (connection != null) connection.close();
+                if (tempConnection != null && !tempConnection.isClosed()) tempConnection.close();
             } catch (SQLException ex) {
-                ex.printStackTrace(); // Consider using a logging framework
+                ex.printStackTrace();
             }
         }
     }
 
-    public void dataDisconnect() {
+
+    public void dataDisconnect(){
 
         if (connection != null) {
 
@@ -71,5 +103,19 @@ public class DataBase {
                 e.printStackTrace();
             }
         }
+    }
+
+
+    public PlayerManager findStatsByUUID(UUID uuid) {
+
+        try {
+            statement = connection.createStatement();
+            String getUUID = "SELECT * FROM player_data WHERE uuid = " + uuid;
+            statement.executeQuery(getUUID);
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+      return ;
     }
 }
