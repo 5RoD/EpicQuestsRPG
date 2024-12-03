@@ -2,3 +2,16 @@ name: EpicQuestRPG
 version: '0.1-ALPHA'
 main: EpicQuestsRPG.EpicQuestRPG
 api-version: '1.21'
+soft-depend: [Vault, VaultUnlocked]
+
+commands:
+  eco:
+    description: Displays your current balance.
+    usage: /eco
+    permission: epicquestsrpg.balance
+    permission-message: You do not have permission to view your balance.
+  ecodeposit:
+    description: Deposits money into your account.
+    usage: /ecodeposit
+    permission: epicquestsrpg.deposit
+    permission-message: You do not have permission to deposit money.
