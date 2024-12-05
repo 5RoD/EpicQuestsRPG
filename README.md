@@ -137,7 +137,7 @@ If you encounter issues or have questions, feel free to:
 ## **Roadmap**
 ### Current Features
 - [x] Mysql System
-
+- [x] Economy Integration | 90% finished just needs small touches!
 
 ### Planned Features
 - [ ] Additional boss mechanics.
@@ -145,7 +145,7 @@ If you encounter issues or have questions, feel free to:
 - [ ] Discord bot integration for quest progress.
 - [ ] Mongo and SQL System
 - [ ] Fully working Config System
-- [ ] Economy Integration
+
 - [ ] Custom Items and Recipes
 - [ ] etc, etc.
 
