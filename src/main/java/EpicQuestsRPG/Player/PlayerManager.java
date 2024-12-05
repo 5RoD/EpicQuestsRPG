@@ -5,18 +5,20 @@ public class PlayerManager {
 
 
     private boolean player_done_before;
-    private double money;
+    private double player_money;
     private String uuid;
+    private String player_name;
     private String player_class;
-    private String player_current_class;
+    private String player_current_quest;
 
 
-    public PlayerManager(boolean player_done_before, double money, String uuid, String player_class, String player_current_class) {
+    public PlayerManager(boolean player_done_before, double player_money, String uuid, String player_class, String player_current_quest, String player_name) {
         this.player_done_before = player_done_before;
-        this.money = money;
+        this.player_money = player_money;
         this.uuid = uuid;
+        this.player_name = player_name;
         this.player_class = player_class;
-        this.player_current_class = player_current_class;
+        this.player_current_quest = player_current_quest;
     }
 
 
@@ -29,11 +31,11 @@ public class PlayerManager {
     }
 
     public double getMoney() {
-        return money;
+        return player_money;
     }
 
-    public void setMoney(double money) {
-        this.money = money;
+    public void setMoney(double player_money) {
+        this.player_money = player_money;
     }
 
     public String getUuid() {
@@ -44,6 +46,14 @@ public class PlayerManager {
         this.uuid = uuid;
     }
 
+    public String getPlayer_name() {
+        return player_name;
+    }
+
+    public void setPlayer_Name(String player_name) {
+        this.player_name = player_name;
+    }
+
     public String getPlayer_class() {
         return player_class;
     }
@@ -52,11 +62,11 @@ public class PlayerManager {
         this.player_class = player_class;
     }
 
-    public String getPlayer_current_class() {
-        return player_current_class;
+    public String getPlayer_current_quest() {
+        return player_current_quest;
     }
 
-    public void setPlayer_current_class(String player_current_class) {
-        this.player_current_class = player_current_class;
+    public void setPlayer_current_quest(String player_current_quest) {
+        this.player_current_quest = player_current_quest;
     }
 }

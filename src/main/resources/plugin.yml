@@ -2,7 +2,12 @@ name: EpicQuestRPG
 version: '0.1-ALPHA'
 main: EpicQuestsRPG.EpicQuestRPG
 api-version: '1.21'
-soft-depend: [Vault, VaultUnlocked]
+
+depend:
+  - Vault
+
+load-after:
+  - Vault
 
 commands:
   eco:

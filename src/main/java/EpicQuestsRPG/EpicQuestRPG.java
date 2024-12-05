@@ -1,36 +1,45 @@
 package EpicQuestsRPG;
 
+import EpicQuestsRPG.Player.PlayerListener;
 import EpicQuestsRPG.economy.VaultUtil;
 import EpicQuestsRPG.util.ConfigUtil;
 import EpicQuestsRPG.util.DataBase;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class EpicQuestRPG extends JavaPlugin {
 
-   // private VaultUtil vaultUtil;
+    private VaultUtil vaultUtil;
     private DataBase dataBase;
+
+    public DataBase getDataBase() {
+        return dataBase;
+    }
 
     @Override
     public void onEnable() {
-
-
-
         // Register ConfigUtil
         ConfigUtil configUtil = new ConfigUtil(this);
         // Register database.java config only
-        dataBase = new DataBase(configUtil);
+        this.dataBase = new DataBase(configUtil, this);
         // Connect to database on startup
         dataBase.dataConnect();
 
         // Initialize VaultUtil and register commands
-        //vaultUtil = new VaultUtil(this); // Pass main plugin reference
+        vaultUtil = new VaultUtil(this); // Pass main plugin reference
 
-//        getCommand("eco").setExecutor((CommandExecutor) vaultUtil);
-//        getCommand("ecodeposit").setExecutor((CommandExecutor) vaultUtil);
+        if (getCommand("eco") != null) {
+            getCommand("eco").setExecutor(vaultUtil);
+        } else {
+            getLogger().severe("Command /eco not found in plugin.yml");
+        }
+
+        if (getCommand("ecodeposit") != null) {
+            getCommand("ecodeposit").setExecutor(vaultUtil);
+        } else {
+            getLogger().severe("Command /ecodeposit not found in plugin.yml");
+        }
+
+        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
     }
 
     @Override
