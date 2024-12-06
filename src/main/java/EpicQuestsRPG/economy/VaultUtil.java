@@ -12,7 +12,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.math.BigDecimal;
 
-public class VaultUtil implements CommandExecutor {
+public class VaultUtil  {
 
     private static Economy econ = null;
     private static Permission perms = null;

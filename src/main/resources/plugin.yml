@@ -20,3 +20,8 @@ commands:
     usage: /ecodeposit
     permission: epicquestsrpg.deposit
     permission-message: You do not have permission to deposit money.
+  gui:
+    description: Opens a testing gui
+    usage: /gui
+    permission: epicquestsrpg.gui
+    permission-message: You do not have permission to run this
