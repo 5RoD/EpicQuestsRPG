@@ -1,6 +1,7 @@
 package EpicQuestsRPG;
 
 import EpicQuestsRPG.Player.PlayerListener;
+import EpicQuestsRPG.commands.Eco;
 import EpicQuestsRPG.economy.VaultUtil;
 import EpicQuestsRPG.util.ConfigUtil;
 import EpicQuestsRPG.util.DataBase;
@@ -9,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class EpicQuestRPG extends JavaPlugin {
 
     private VaultUtil vaultUtil;
+    private Eco eco;
     private DataBase dataBase;
 
     public DataBase getDataBase() {
@@ -27,17 +29,12 @@ public final class EpicQuestRPG extends JavaPlugin {
         // Initialize VaultUtil and register commands
         vaultUtil = new VaultUtil(this); // Pass main plugin reference
 
-        if (getCommand("eco") != null) {
-            getCommand("eco").setExecutor(vaultUtil);
-        } else {
-            getLogger().severe("Command /eco not found in plugin.yml");
-        }
 
-        if (getCommand("ecodeposit") != null) {
-            getCommand("ecodeposit").setExecutor(vaultUtil);
-        } else {
-            getLogger().severe("Command /ecodeposit not found in plugin.yml");
-        }
+
+        //Intialize Commands
+            getCommand("eco").setExecutor(eco);
+            getCommand("ecodeposit").setExecutor(eco);
+
 
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
     }

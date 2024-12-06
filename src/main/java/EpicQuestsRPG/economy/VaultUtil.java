@@ -23,14 +23,10 @@ public class VaultUtil implements CommandExecutor {
     public VaultUtil(EpicQuestRPG plugin) {
         this.plugin = plugin;
         this.moneyUtil = new MoneyUtil(plugin);
-        new BukkitRunnable() {
-            @Override
-            public void run() {
                 setupEconomy();
                 setupPermissions();
             }
-        }.runTaskLater(plugin, 20L); // Delay by 1 second (20 ticks)
-    }
+
 
     private boolean setupEconomy() {
         if (plugin.getServer().getPluginManager().getPlugin("Vault") == null) {
@@ -48,28 +44,8 @@ public class VaultUtil implements CommandExecutor {
         return perms != null;
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("This command can only be executed by players.");
-            return true;
-        }
 
-        Player player = (Player) sender;
-
-        switch (command.getName().toLowerCase()) {
-            case "eco":
-                handleEcoCommand(player);
-                return true;
-            case "ecodeposit":
-                handleEcoDepositCommand(player, args);
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    private void handleEcoCommand(Player player) {
+    public void handleEcoCommand(Player player) {
         if (!player.hasPermission("epicquestsrpg.balance")) {
             player.sendMessage("You do not have permission to use this command.");
             return;
@@ -79,7 +55,7 @@ public class VaultUtil implements CommandExecutor {
         player.sendMessage(String.format("Your current balance is: %s", econ.format(balance)));
     }
 
-    private void handleEcoDepositCommand(Player player, String[] args) {
+    public void handleEcoDepositCommand(Player player, String[] args) {
         if (!player.hasPermission("epicquestsrpg.deposit")) {
             player.sendMessage("You do not have permission to use this command.");
             return;
