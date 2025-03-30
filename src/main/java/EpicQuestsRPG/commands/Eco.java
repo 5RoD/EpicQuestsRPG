@@ -25,19 +25,18 @@ public class Eco implements CommandExecutor {
 
         if (!player.hasPermission("epicquestsrpg.eco")) {
             sender.sendMessage(CC.translate("&cYou do not have permission to run this"));
-            return true;
+
         }
 
 
         switch (command.getName().toLowerCase()) {
             case "eco":
                 vaultUtil.handleEcoCommand(player);
-                return true;
+
             case "ecodeposit":
                 vaultUtil.handleEcoDepositCommand(player, args);
-                return true;
-            default:
 
+            default:
                 return false;
         }
 

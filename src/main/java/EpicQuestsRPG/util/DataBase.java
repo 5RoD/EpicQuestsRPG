@@ -120,6 +120,44 @@ public class DataBase {
         }
     }
 
+    public String playerSearch(String player_name) {
+        try {
+            // Code to search in MySQL
+            String searchSQL = "SELECT * FROM player_data WHERE player_name = ?";
+
+            // Running the code above
+            PreparedStatement preparedStatement = connection.prepareStatement(searchSQL);
+
+            // Setting the ? in the searchSQL to the playerName
+            preparedStatement.setString(1, player_name);
+
+            // Execute the query using the prepared statement
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Check if a result is found
+
+            if (resultSet.next()) {
+
+                if (resultSet.getString(1 ) == null) {
+                    return player_name + " not found";
+                } else {
+                    // Retrieve data from the result set
+                    player_name = resultSet.getString(1);
+
+                }
+            }
+            // Close the prepared statement for performance after we're finished
+
+            preparedStatement.close();
+            resultSet.close();
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return player_name;
+    }
+
 
     public void addPlayer(String uuid, String playerName) {
         try {
@@ -157,7 +195,8 @@ public class DataBase {
 
                 return playerManager;
             } else {
-                plugin.getLogger().severe("Error! look for me @ Database#findStatsByUUID");
+                plugin.getLogger().severe("Error finding stats for UUID: " + uuid + " @ Database#findStatsByUUID");
+
                 return null;
             }
         } catch (SQLException e) {

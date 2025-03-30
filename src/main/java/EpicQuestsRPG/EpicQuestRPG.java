@@ -1,6 +1,7 @@
 package EpicQuestsRPG;
 
 import EpicQuestsRPG.Player.PlayerListener;
+import EpicQuestsRPG.commands.Class;
 import EpicQuestsRPG.commands.Eco;
 import EpicQuestsRPG.commands.Gui;
 import EpicQuestsRPG.economy.VaultUtil;
@@ -11,13 +12,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class EpicQuestRPG extends JavaPlugin {
 
-    private VaultUtil vaultUtil;
-    private Eco eco;
-    private Gui gui;
-    private DataBase dataBase;
+    private VaultUtil VaultUtil;
+    private Eco Eco;
+    private Gui Gui;
+    private DataBase DataBase;
+    private Class Class;
 
     public DataBase getDataBase() {
-        return dataBase;
+        return DataBase;
     }
 
     @Override
@@ -25,23 +27,25 @@ public final class EpicQuestRPG extends JavaPlugin {
         // Register ConfigUtil
         ConfigUtil configUtil = new ConfigUtil(this);
         // Register database.java config only
-        this.dataBase = new DataBase(configUtil, this);
+        this.DataBase = new DataBase(configUtil, this);
         // Connect to database on startup
-        dataBase.dataConnect();
+        DataBase.dataConnect();
 
         // Initialize VaultUtil and register commands
-        vaultUtil = new VaultUtil(this); // Pass main plugin reference
+        VaultUtil = new VaultUtil(this); // Pass main plugin reference
 
         // Initialize MenuUtil
         MenuUtil menuUtil = new MenuUtil();
 
         // Initialize Commands
-        gui = new Gui(menuUtil);
+        Gui = new Gui(menuUtil);
+
 
         //Intialize Commands
-            getCommand("eco").setExecutor(eco);
-            getCommand("ecodeposit").setExecutor(eco);
-            getCommand("gui").setExecutor(gui);
+            getCommand("eco").setExecutor(Eco);
+            getCommand("ecodeposit").setExecutor(Eco);
+            getCommand("gui").setExecutor(Gui);
+            this.getCommand("classsearch").setExecutor(new Class(DataBase));
 
 
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
@@ -50,6 +54,6 @@ public final class EpicQuestRPG extends JavaPlugin {
     @Override
     public void onDisable() {
         // Disconnect from the database on server shutdown
-        dataBase.dataDisconnect();
+        DataBase.dataDisconnect();
     }
 }

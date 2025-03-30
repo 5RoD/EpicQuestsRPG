@@ -40,10 +40,13 @@ public class VaultUtil  {
 
     private boolean setupPermissions() {
         RegisteredServiceProvider<Permission> rsp = plugin.getServer().getServicesManager().getRegistration(Permission.class);
+        if (rsp == null) {
+            plugin.getLogger().severe("Permission service not found!");
+            return false;
+        }
         perms = rsp.getProvider();
-        return perms != null;
+        return true;
     }
-
 
     public void handleEcoCommand(Player player) {
         if (!player.hasPermission("epicquestsrpg.balance")) {

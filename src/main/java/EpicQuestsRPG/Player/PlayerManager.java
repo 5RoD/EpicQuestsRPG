@@ -12,18 +12,26 @@ public class PlayerManager {
     private String player_current_quest;
 
 
+
     public PlayerManager(boolean player_done_before, double player_money, String uuid, String player_class, String player_current_quest, String player_name) {
         this.player_done_before = player_done_before;
+        this.player_name = player_name;
         this.player_money = player_money;
         this.uuid = uuid;
-        this.player_name = player_name;
         this.player_class = player_class;
         this.player_current_quest = player_current_quest;
+
+
     }
 
 
     public boolean isPlayer_done_before() {
         return player_done_before;
+    }
+
+
+    public String player_search(String player_name) {
+        return player_name;
     }
 
     public void setPlayer_done_before(boolean player_done_before) {

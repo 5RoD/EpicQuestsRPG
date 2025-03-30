@@ -1,9 +1,9 @@
 database:
-  host: "localhost"           # The database server address (e.g., localhost or IP)
-  port: 3306                  # The port MySQL listens on (default: 3306)
-  name: "epicquest_rpg"       # The name of the database
-  username: "root"            # The username for the database
-  password: "password"        # The password for the database
+  host: "webshop-webshop5rod.j.aivencloud.com"           # The database server address (e.g., localhost or IP)
+  port: 22036                  # The port MySQL listens on (default: 3306)
+  name: "epic_quest"       # The name of the database
+  username: "avnadmin"            # The username for the database
+  password: "AVNS_a7k-Hx4XnmrMKqFG5I0"        # The password for the database
 
 options:
   use-ssl: false              # Set to true if SSL is required

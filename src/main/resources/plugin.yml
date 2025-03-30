@@ -25,3 +25,8 @@ commands:
     usage: /gui
     permission: epicquestsrpg.gui
     permission-message: You do not have permission to run this
+  classsearch:
+    description: searches for a player
+    usage: /classsearch
+    permission: epicquestsrpg.class
+    permission-message: You do not have permission to run this
