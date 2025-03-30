@@ -69,6 +69,7 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+node_modules
 
 # Windows thumbnail cache files
 Thumbs.db
