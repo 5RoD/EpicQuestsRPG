@@ -161,16 +161,40 @@ public class DataBase {
 
     public void addPlayer(String uuid, String playerName) {
         try {
-            String sql = "INSERT INTO player_data (uuid, player_name, player_class, player_current_quest, player_money, player_done_before) VALUES (?, ?, ?, ?, ?, ?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, uuid);
-            preparedStatement.setString(2, playerName);
-            preparedStatement.setString(3, "default"); // Set default class or retrieve from player data
-            preparedStatement.setString(4, ""); // Default current quest
-            preparedStatement.setDouble(5, 0.0); // Default money
-            preparedStatement.setBoolean(6, false); // Default done before
-            preparedStatement.executeUpdate();
-            preparedStatement.close();
+            // Check if the player already exists
+            String checkSQL = "SELECT * FROM player_data WHERE uuid = ?";
+            PreparedStatement checkStatement = connection.prepareStatement(checkSQL);
+            checkStatement.setString(1, uuid);
+            ResultSet resultSet = checkStatement.executeQuery();
+
+            if (resultSet.next()) {
+                // Player exists, check if the name is different
+                String existingName = resultSet.getString("player_name");
+                if (!existingName.equals(playerName)) {
+                    // Update the player's name
+                    String updateSQL = "UPDATE player_data SET WHERE uuid = ? player_name = ? ";
+                    PreparedStatement updateStatement = connection.prepareStatement(updateSQL);
+                    updateStatement.setString(2, playerName);
+                    updateStatement.setString(1, uuid);
+                    updateStatement.executeUpdate();
+                    updateStatement.close();
+                }
+            } else {
+                // Player does not exist, insert a new record
+                String insertSQL = "INSERT INTO player_data (uuid, player_name, player_class, player_current_quest, player_money, player_done_before) VALUES (?, ?, ?, ?, ?, ?)";
+                PreparedStatement insertStatement = connection.prepareStatement(insertSQL);
+                insertStatement.setString(1, uuid);
+                insertStatement.setString(2, playerName);
+                insertStatement.setString(3, "default"); // Set default class or retrieve from player data
+                insertStatement.setString(4, ""); // Default current quest
+                insertStatement.setDouble(5, 0.0); // Default money
+                insertStatement.setBoolean(6, false); // Default done before
+                insertStatement.executeUpdate();
+                insertStatement.close();
+            }
+
+            checkStatement.close();
+            resultSet.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -187,11 +211,12 @@ public class DataBase {
                 String player_class = resultSet.getString("player_class");
                 String player_name = resultSet.getString("player_name");
                 String player_current_quest = resultSet.getString("player_current_quest");
-                Boolean player_done_before = resultSet.getBoolean("player_done_before");
+                boolean player_done_before = resultSet.getBoolean("player_done_before");
                 double player_money = resultSet.getDouble("player_money");
 
                 PlayerManager playerManager = new PlayerManager(player_done_before, player_money, uuid, player_class, player_current_quest, player_name);
                 statement.close();
+                resultSet.close();
 
                 return playerManager;
             } else {

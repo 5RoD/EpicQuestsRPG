@@ -18,6 +18,7 @@ public final class EpicQuestRPG extends JavaPlugin {
     private DataBase DataBase;
     private Class Class;
 
+
     public DataBase getDataBase() {
         return DataBase;
     }
@@ -42,10 +43,10 @@ public final class EpicQuestRPG extends JavaPlugin {
 
 
         //Intialize Commands
-            getCommand("eco").setExecutor(Eco);
-            getCommand("ecodeposit").setExecutor(Eco);
-            getCommand("gui").setExecutor(Gui);
-            this.getCommand("classsearch").setExecutor(new Class(DataBase));
+        getCommand("eco").setExecutor(Eco);
+        getCommand("ecodeposit").setExecutor(Eco);
+        getCommand("gui").setExecutor(Gui);
+        this.getCommand("classsearch").setExecutor(new Class(DataBase));
 
 
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);

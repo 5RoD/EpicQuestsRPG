@@ -1,7 +1,5 @@
 package EpicQuestsRPG.commands;
 
-import EpicQuestsRPG.EpicQuestRPG;
-import EpicQuestsRPG.Player.PlayerManager;
 import EpicQuestsRPG.util.CC;
 import EpicQuestsRPG.util.DataBase;
 import org.bukkit.command.Command;
@@ -9,6 +7,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.regex.Pattern;
 
 public class Class implements CommandExecutor {
 
@@ -36,19 +36,21 @@ public class Class implements CommandExecutor {
         if (command.getName().equalsIgnoreCase("classsearch")) {
             if (args.length == 0) {
                 sender.sendMessage(CC.translate("&cPlease provide a player name to search."));
-                return false;
+                return true;
             }
 
             String playerName = args[0];
             var result = dataBase.playerSearch(playerName);
 
+            String uuidRegex = "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$";
 
-            if (result != null) {
-                sender.sendMessage(CC.translate("&aFound player in the database: " + result));
+            if (Pattern.matches(uuidRegex, result)) {
+                sender.sendMessage(CC.translate("&aFound player &e" + playerName + " &ain the database their uuid: " + result));
             } else {
-                sender.sendMessage(CC.translate("&cPlayer not found in the database."));
+                sender.sendMessage(CC.translate("&cPlayer &e" + playerName + " &cnot found in the database."));
             }
 
+            return true;
         }
 
         return false;
