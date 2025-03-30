@@ -70,7 +70,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 node_modules
-
+gpg-private-key.asc
 # Windows thumbnail cache files
 Thumbs.db
 Thumbs.db:encryptable
