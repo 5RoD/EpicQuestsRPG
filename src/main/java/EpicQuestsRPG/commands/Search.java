@@ -8,13 +8,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.regex.Pattern;
-
-public class Class implements CommandExecutor {
+public class Search implements CommandExecutor {
 
     private DataBase dataBase;
 
-    public Class(DataBase dataBase) {
+    public Search(DataBase dataBase) {
         this.dataBase = dataBase;
     }
 
@@ -33,19 +31,19 @@ public class Class implements CommandExecutor {
             return true;
         }
 
-        if (command.getName().equalsIgnoreCase("classsearch")) {
+        if (command.getName().equalsIgnoreCase("search")) {
             if (args.length == 0) {
                 sender.sendMessage(CC.translate("&cPlease provide a player name to search."));
                 return true;
             }
 
             String playerName = args[0];
-            var result = dataBase.playerSearch(playerName);
+
 
             String uuidRegex = "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$";
 
-            if (Pattern.matches(uuidRegex, result)) {
-                sender.sendMessage(CC.translate("&aFound player &e" + playerName + " &ain the database their uuid: " + result));
+            if (dataBase.playerSearch(playerName) != null) {
+                sender.sendMessage(CC.translate("&aFound player &e" + playerName + " &ain the database their Info: \n" + dataBase.playerSearch(playerName).toString()));
             } else {
                 sender.sendMessage(CC.translate("&cPlayer &e" + playerName + " &cnot found in the database."));
             }

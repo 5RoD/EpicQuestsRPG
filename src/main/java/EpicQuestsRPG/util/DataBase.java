@@ -120,7 +120,8 @@ public class DataBase {
         }
     }
 
-    public String playerSearch(String player_name) {
+    public PlayerManager playerSearch(String player_name) {
+        PlayerManager playerManager = null;
         try {
             // Code to search in MySQL
             String searchSQL = "SELECT * FROM player_data WHERE player_name = ?";
@@ -135,27 +136,26 @@ public class DataBase {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             // Check if a result is found
-
             if (resultSet.next()) {
+                // Retrieve data from the result set
+                String uuid = resultSet.getString("uuid");
+                String playerClass = resultSet.getString("player_class");
+                String playerCurrentQuest = resultSet.getString("player_current_quest");
+                boolean playerDoneBefore = resultSet.getBoolean("player_done_before");
+                double playerMoney = resultSet.getDouble("player_money");
 
-                if (resultSet.getString(1 ) == null) {
-                    return player_name + " not found";
-                } else {
-                    // Retrieve data from the result set
-                    player_name = resultSet.getString(1);
-
-                }
+                // Create a PlayerManager object with the retrieved data
+                playerManager = new PlayerManager(playerDoneBefore, playerMoney, uuid, playerClass, playerCurrentQuest, player_name);
             }
-            // Close the prepared statement for performance after we're finished
 
+            // Close the prepared statement and result set for performance after we're finished
             preparedStatement.close();
             resultSet.close();
-
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return player_name;
+        return playerManager;
     }
 
 
@@ -186,7 +186,7 @@ public class DataBase {
                 insertStatement.setString(1, uuid);
                 insertStatement.setString(2, playerName);
                 insertStatement.setString(3, "default"); // Set default class or retrieve from player data
-                insertStatement.setString(4, ""); // Default current quest
+                insertStatement.setString(4, "NONE"); // Default current quest
                 insertStatement.setDouble(5, 0.0); // Default money
                 insertStatement.setBoolean(6, false); // Default done before
                 insertStatement.executeUpdate();
@@ -199,6 +199,25 @@ public class DataBase {
             e.printStackTrace();
         }
     }
+
+
+    //Update Class for a player
+    public void UpdateClass(String class_name, String player_name) {
+        try {
+            String insertSQL = "UPDATE player_data SET player_class = ? WHERE player_name = ?";
+
+            PreparedStatement preparedStatement = connection.prepareStatement(insertSQL);
+            preparedStatement.setString(1, class_name);
+            preparedStatement.setString(2, player_name);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+
+            } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 
     public PlayerManager findStatsByUUID(String uuid) {
         try {

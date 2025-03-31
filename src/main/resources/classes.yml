@@ -1,16 +1,30 @@
+# You cant change the name or the abilities yet but i plan to add
+# more stuff later on and make it fully customizable but for now,
+# i'll add couple of abilities and make the classes work and if i got
+# the time later on ill amke it better!
+# for now you should be able to change the health, damage of the classes!
+
 classes:
+# has the most health and the tankiest class, but no magic or long range attacks
   Warrior:
     health: 40
     damage: 10
-    mana: 0
     abilities:
       - "ground_slam"
       - "shield_block"
 
+# Has long range fire/ice damage
   Mage:
     health: 20
     damage: 5
-    mana: 50
     abilities:
       - "fireball"
       - "ice_blast"
+
+# Has extra bow damage
+  Archer:
+    health: 15
+    damage: 5
+    abilities:
+      - "fire_shot"
+      - "ice_shot"

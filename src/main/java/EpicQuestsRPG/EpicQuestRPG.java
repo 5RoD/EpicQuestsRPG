@@ -1,7 +1,11 @@
 package EpicQuestsRPG;
 
 import EpicQuestsRPG.Player.PlayerListener;
-import EpicQuestsRPG.commands.Class;
+import EpicQuestsRPG.classes.Archer;
+import EpicQuestsRPG.classes.ChangeClass;
+import EpicQuestsRPG.classes.Mage;
+import EpicQuestsRPG.classes.Warrior;
+import EpicQuestsRPG.commands.Search;
 import EpicQuestsRPG.commands.Eco;
 import EpicQuestsRPG.commands.Gui;
 import EpicQuestsRPG.economy.VaultUtil;
@@ -16,8 +20,8 @@ public final class EpicQuestRPG extends JavaPlugin {
     private Eco Eco;
     private Gui Gui;
     private DataBase DataBase;
-    private Class Class;
-
+    private Search Search;
+    private ChangeClass ChangeClass;
 
     public DataBase getDataBase() {
         return DataBase;
@@ -41,15 +45,20 @@ public final class EpicQuestRPG extends JavaPlugin {
         // Initialize Commands
         Gui = new Gui(menuUtil);
 
+        // Initializes Classes
+        Warrior warrior = new Warrior(DataBase); // Initialize Warrior
+        Mage mage = new Mage(DataBase); // Initialize Mage
+        Archer archer = new Archer(DataBase); // Initialize Archer
+        ChangeClass = new ChangeClass(warrior, mage, archer); // Pass instances to ChangeClass
 
         //Intialize Commands
         getCommand("eco").setExecutor(Eco);
         getCommand("ecodeposit").setExecutor(Eco);
         getCommand("gui").setExecutor(Gui);
-        this.getCommand("classsearch").setExecutor(new Class(DataBase));
+        getCommand("class").setExecutor(ChangeClass); // Set ChangeClass as command executor
+        this.getCommand("search").setExecutor(new Search(DataBase));
 
-
-        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerListener(this.getDataBase()), this);
     }
 
     @Override

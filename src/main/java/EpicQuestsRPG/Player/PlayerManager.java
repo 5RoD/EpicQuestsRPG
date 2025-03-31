@@ -1,5 +1,7 @@
 package EpicQuestsRPG.Player;
 
+import EpicQuestsRPG.util.CC;
+
 public class PlayerManager {
 
 
@@ -24,6 +26,17 @@ public class PlayerManager {
 
     }
 
+//translates the playermanager objects into readable text
+    public String toString() {
+        return CC.translate(
+                "&6player_done_before: &e" + player_done_before + "\n" +
+                        "&6player_money: &e" + player_money + "\n" +
+                        "&6uuid: &e" + uuid + "\n" +
+                        "&6player_name: &e" + player_name + "\n" +
+                        "&6player_class: &e" + player_class + "\n" +
+                        "&6player_current_quest: &e" + player_current_quest
+        );
+    }
 
     public boolean isPlayer_done_before() {
         return player_done_before;

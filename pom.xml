@@ -49,6 +49,27 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Maven Exec Plugin for Running a Script -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>cmd</executable>
+                    <arguments>
+                        <argument>/c</argument>
+                        <argument>start_server.bat</argument> <!-- Call the .bat file -->
+                    </arguments>
+                </configuration>
+            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -56,6 +77,8 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
+
+
     </build>
 
     <repositories>

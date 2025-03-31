@@ -1,38 +1,29 @@
 package EpicQuestsRPG.Player;
 
-import EpicQuestsRPG.EpicQuestRPG;
-import EpicQuestsRPG.util.CC;
-import org.bukkit.Bukkit;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
+import EpicQuestsRPG.util.DataBase;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.entity.Player;
 
 public class PlayerListener implements Listener {
 
-    private final EpicQuestRPG plugin;
+    private DataBase dataBase;
 
-    public PlayerListener(EpicQuestRPG plugin) {
-        this.plugin = plugin;
+    public PlayerListener(DataBase dataBase) {
+        this.dataBase = dataBase;
     }
 
-
     @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
-
-        Player player = e.getPlayer();
+    public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        String playerName = player.getName();
         String uuid = player.getUniqueId().toString();
 
-        PlayerManager playerManager = this.plugin.getDataBase().findStatsByUUID(uuid);
-
-        if (playerManager == null) {
-
-        this.plugin.getDataBase().addPlayer(uuid, player.getName());
-
-    } else {
-            ConsoleCommandSender console = Bukkit.getConsoleSender();
-            console.sendMessage(CC.translate("&cERROR OCCURRED FIND ME #PlayerListener.java Line 48!"));
-            throw new RuntimeException();
+        // Check if the player exists in the database
+        if (dataBase.playerSearch(playerName) == null) {
+            // Add the player to the database if they don't exist
+            dataBase.addPlayer(uuid, playerName);
         }
-}}
+    }
+}

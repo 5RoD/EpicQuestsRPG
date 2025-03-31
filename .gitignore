@@ -71,6 +71,10 @@ Temporary Items
 .apdisk
 node_modules
 gpg-private-key.asc
+start_server.bat
+.gitattributes
+.idea
+
 # Windows thumbnail cache files
 Thumbs.db
 Thumbs.db:encryptable

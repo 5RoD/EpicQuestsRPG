@@ -25,8 +25,13 @@ commands:
     usage: /gui
     permission: epicquestsrpg.gui
     permission-message: You do not have permission to run this
-  classsearch:
-    description: searches for a player
-    usage: /classsearch
+  search:
+    description: searches for a player info
+    usage: /search
+    permission: epicquestsrpg.admin
+    permission-message: You do not have permission to run this
+  class:
+    description: changes your current class
+    usage: /class
     permission: epicquestsrpg.class
     permission-message: You do not have permission to run this
