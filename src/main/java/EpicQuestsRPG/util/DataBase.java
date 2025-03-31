@@ -203,6 +203,8 @@ public class DataBase {
 
     //Update Class for a player
     public void UpdateClass(String class_name, String player_name) {
+
+
         try {
             String insertSQL = "UPDATE player_data SET player_class = ? WHERE player_name = ?";
 

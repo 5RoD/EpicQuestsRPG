@@ -49,7 +49,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Maven Exec Plugin for Running a Script -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -77,8 +76,6 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-
-
     </build>
 
     <repositories>
@@ -98,7 +95,20 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
+        <!-- Add GitHub Packages repository -->
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/5RoD/EpicQuestsRPG</url>
+        </repository>
     </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/5RoD/EpicQuestsRPG</url>
+        </repository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
