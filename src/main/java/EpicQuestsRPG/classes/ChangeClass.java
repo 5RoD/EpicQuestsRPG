@@ -64,23 +64,27 @@ public class ChangeClass implements CommandExecutor, TabCompleter {
             // Handle the class change logic
             switch (selectedClass) {
                 case WARRIOR:
-                    sender.sendMessage(CC.translate("&cYou have selected the Warrior class!"));
                     warrior.warrior(player.getName(), selectedClass.toString());
+                    sender.sendMessage(CC.translate("&cYou have selected the Warrior class!"));
+
                     break;
                 case MAGE:
+                    mage.mage(player.getName(), selectedClass.toString());
                     sender.sendMessage(CC.translate("&dYou have selected the Mage class!"));
-                    mage.Mage(player.getName(), selectedClass.toString());
                     break;
                 case ARCHER:
+                    archer.archer(player.getName(), selectedClass.toString());
                     sender.sendMessage(CC.translate("&aYou have selected the Archer class!"));
-                    archer.Archer(player.getName(), selectedClass.toString());
+                    archer.onArcherSelect(player);
+
+
                     break;
             }
 
-            return true; // Command handled
+            return true;
         }
 
-        return false; // Invalid command, let the server handle it
+        return false;
     }
 
 @Override
@@ -98,6 +102,6 @@ public class ChangeClass implements CommandExecutor, TabCompleter {
                 return suggestions;
             }
         }
-        return null; // Return null if no suggestions
+        return null; // Dont return anything if nothing found in ENUM
     }
 }

@@ -31,10 +31,12 @@ public final class EpicQuestRPG extends JavaPlugin {
     public void onEnable() {
         // Register ConfigUtil
         ConfigUtil configUtil = new ConfigUtil(this);
-        // Register database.java config only
+
+        // Initialize DataBase with the ConfigUtil and main plugin reference
         this.DataBase = new DataBase(configUtil, this);
-        // Connect to database on startup
-        DataBase.dataConnect();
+
+        // Database connection is handled automatically by HikariCP, no need for immediate connection call
+        // DataBase.dataConnect(); (not needed anymore since Hikari handles it)
 
         // Initialize VaultUtil and register commands
         VaultUtil = new VaultUtil(this); // Pass main plugin reference
@@ -45,20 +47,24 @@ public final class EpicQuestRPG extends JavaPlugin {
         // Initialize Commands
         Gui = new Gui(menuUtil);
 
-        // Initializes Classes
+        // Initialize Classes with Database
         Warrior warrior = new Warrior(DataBase); // Initialize Warrior
         Mage mage = new Mage(DataBase); // Initialize Mage
-        Archer archer = new Archer(DataBase); // Initialize Archer
-        ChangeClass = new ChangeClass(warrior, mage, archer); // Pass instances to ChangeClass
+        Archer archer = new Archer(configUtil, DataBase); // Initialize Archer
 
-        //Intialize Commands
+        // Pass instances to ChangeClass
+        ChangeClass = new ChangeClass(warrior, mage, archer);
+
+        // Register events and commands
+        getServer().getPluginManager().registerEvents(archer, this); // Register Archer events
+        getServer().getPluginManager().registerEvents(new PlayerListener(this.getDataBase()), this); // Register PlayerListener
+
+        // Initialize Commands
         getCommand("eco").setExecutor(Eco);
         getCommand("ecodeposit").setExecutor(Eco);
         getCommand("gui").setExecutor(Gui);
         getCommand("class").setExecutor(ChangeClass); // Set ChangeClass as command executor
         this.getCommand("search").setExecutor(new Search(DataBase));
-
-        getServer().getPluginManager().registerEvents(new PlayerListener(this.getDataBase()), this);
     }
 
     @Override
