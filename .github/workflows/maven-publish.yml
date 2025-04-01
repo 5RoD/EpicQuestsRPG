@@ -24,11 +24,15 @@ jobs:
           server-id: github
           settings-path: ${{ github.workspace }}
 
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
-
       - name: Extract commit hash
         run: echo "COMMIT_HASH=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+
+      - name: Update version in pom.xml
+        run: |
+          mvn versions:set -DnewVersion=0.1-ALPHA-${{ github.run_number }}-SNAPSHOT
+
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
@@ -57,6 +61,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to GitHub Packages Apache Maven
-        run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+        run: mvn deploy -Drevision=${{ github.run_number }}-SNAPSHOT -s $GITHUB_WORKSPACE/settings.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

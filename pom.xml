@@ -6,7 +6,7 @@
 
     <groupId>org.gravemc</groupId>
     <artifactId>epicquest-rpg</artifactId>
-    <version>0.1-ALPHA</version>
+    <version>0.3-ALPHA</version>
     <packaging>jar</packaging>
 
     <name>epicquest-rpg</name>
