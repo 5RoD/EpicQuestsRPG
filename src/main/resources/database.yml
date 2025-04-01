@@ -1,9 +1,9 @@
 database:
-  host: "webshop-webshop5rod.j.aivencloud.com"           # The database server address (e.g., localhost or IP)
-  port: 22036                  # The port MySQL listens on (default: 3306)
+  host: "####.aivencloud.com"           # The database server address (e.g., localhost or IP)
+  port: 55555                  # The port MySQL listens on (default: 3306)
   name: "epic_quest"       # The name of the database
-  username: "avnadmin"            # The username for the database
-  password: "AVNS_u_hOqhqQWZVfXZA4Lrt"        # The password for the database
+  username: "####"            # The username for the database
+  password: "#####"        # The password for the database
 
 options:
   use-ssl: false              # Set to true if SSL is required
