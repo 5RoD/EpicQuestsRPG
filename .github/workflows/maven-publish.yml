@@ -1,0 +1,4 @@
+name: maven-publish.yml
+on:
+
+jobs:
