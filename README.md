@@ -141,13 +141,14 @@ If you encounter issues or have questions, feel free to:
 ### Current Features
 - [x] Mysql System
 - [x] Economy Integration | 90% finished just needs small touches!
+- [x] Fully working Config System
 
 ### Planned Features
 - [ ] Additional boss mechanics.
 - [ ] In-game quest creation GUI.
 - [ ] Discord bot integration for quest progress.
 - [ ] Mongo and SQL System
-- [ ] Fully working Config System
+
 
 - [ ] Custom Items and Recipes
 - [ ] etc, etc.
