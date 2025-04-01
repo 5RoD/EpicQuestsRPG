@@ -1,5 +1,8 @@
 # **EpicQuest RPG Plugin**
 
+![ChatGPT Image Apr 1, 2025, 11_37_00 PM-min](https://github.com/user-attachments/assets/d8bfbd54-83f3-4727-a008-1aed785dce3a)
+
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)  
 **EpicQuest RPG** is a feature-packed Minecraft plugin designed to deliver an engaging RPG experience to players. With customizable classes, quests, custom items, economy integration, and boss battles, this plugin is perfect for any server looking to offer a unique adventure.
 
