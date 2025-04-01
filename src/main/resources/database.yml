@@ -1,5 +1,5 @@
 database:
-  host: "####.aivencloud.com"           # The database server address (e.g., localhost or IP)
+  host: "####.####.com"           # The database server address (e.g., localhost or IP)
   port: 55555                  # The port MySQL listens on (default: 3306)
   name: "epic_quest"       # The name of the database
   username: "####"            # The username for the database
