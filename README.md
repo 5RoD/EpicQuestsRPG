@@ -140,8 +140,9 @@ If you encounter issues or have questions, feel free to:
 ## **Roadmap**
 ### Current Features
 - [x] Mysql System
-- [x] Economy Integration | 90% finished just needs small touches!
+- [x] Economy Integration
 - [x] Fully working Config System
+- [x] RPG Classes | 50% Done
 
 ### Planned Features
 - [ ] Additional boss mechanics.
