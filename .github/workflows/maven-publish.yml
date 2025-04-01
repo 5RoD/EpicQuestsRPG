@@ -27,32 +27,31 @@ jobs:
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
-      - name: Extract version and commit hash
-        run: |
-          echo "PLUGIN_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-          echo "COMMIT_HASH=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+      - name: Extract commit hash
+        run: echo "COMMIT_HASH=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
-          name: epicquest-rpg-${{ env.PLUGIN_VERSION }}-${{ env.COMMIT_HASH }}
+          name: epicquest-rpg-RELEASE-${{ env.COMMIT_HASH }}
           path: target/*.jar
           retention-days: 30
 
-      - name: Create GitHub Release
+      - name: Create GitHub Pre-Release
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ env.PLUGIN_VERSION }}
-          release_name: "Release ${{ env.PLUGIN_VERSION }}"
+          tag_name: RELEASE
+          release_name: "Pre-Release ${{ env.COMMIT_HASH }}"
           draft: false
-          prerelease: false
+          prerelease: true  # 👈 This marks it as a pre-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload JAR to Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: RELEASE
           files: target/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
