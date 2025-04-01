@@ -1,9 +1,9 @@
 database:
-  host: "####.####.com"           # The database server address (e.g., localhost or IP)
-  port: 55555                  # The port MySQL listens on (default: 3306)
+  host: "#######.com"           # The database server address (e.g., localhost or IP)
+  port: 3306                 # The port MySQL listens on (default: 3306)
   name: "epic_quest"       # The name of the database
-  username: "####"            # The username for the database
-  password: "#####"        # The password for the database
+  username: "########"            # The username for the database
+  password: "#######"        # The password for the database
 
 options:
   use-ssl: false              # Set to true if SSL is required

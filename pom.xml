@@ -49,26 +49,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.5.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <executable>cmd</executable>
-                    <arguments>
-                        <argument>/c</argument>
-                        <argument>start_server.bat</argument> <!-- Call the .bat file -->
-                    </arguments>
-                </configuration>
-            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -77,6 +57,32 @@
             </resource>
         </resources>
     </build>
+
+    <profiles>
+        <profile>
+            <id>ci</id>
+            <activation>
+                <property>
+                    <name>env.GITHUB_ACTIONS</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.5.0</version>
+                        <executions>
+                            <execution>
+                                <id>skip-exec</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <repositories>
         <repository>
@@ -95,7 +101,6 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
-        <!-- Add GitHub Packages repository -->
         <repository>
             <id>github</id>
             <url>https://maven.pkg.github.com/5RoD/EpicQuestsRPG</url>
