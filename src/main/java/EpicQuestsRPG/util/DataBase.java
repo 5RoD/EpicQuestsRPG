@@ -1,6 +1,8 @@
 package EpicQuestsRPG.util;
 
 import EpicQuestsRPG.Player.PlayerManager;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.*;
@@ -13,51 +15,48 @@ public class DataBase {
     private String name;
     private String username;
     private String password;
-    private Connection connection;
-    private Statement statement;
-    private boolean useSSL;
-    private boolean autoReconnect;
+    private HikariDataSource dataSource;  // HikariCP DataSource
     private final JavaPlugin plugin;
 
     public DataBase(ConfigUtil configUtil, JavaPlugin plugin) {
         this.configUtil = configUtil;
         this.plugin = plugin;
         getDatabaseInfo();
+        setupHikariCP();  // Initialize HikariCP on startup
     }
 
     private void getDatabaseInfo() {
+        // Get the database details from the config file
         this.host = configUtil.getDatabaseConfig().getString("database.host");
         this.port = configUtil.getDatabaseConfig().getInt("database.port");
         this.name = configUtil.getDatabaseConfig().getString("database.name");
         this.username = configUtil.getDatabaseConfig().getString("database.username");
         this.password = configUtil.getDatabaseConfig().getString("database.password");
-        this.useSSL = configUtil.getDatabaseConfig().getBoolean("options.use-ssl");
-        this.autoReconnect = configUtil.getDatabaseConfig().getBoolean("options.auto-reconnect");
+    }
+
+    private void setupHikariCP() {
+        // Configure HikariCP connection pool
+        HikariConfig config = new HikariConfig();
+        String dbUrl = "jdbc:mysql://" + host + ":" + port + "/" + name + "?useSSL=" + configUtil.getDatabaseConfig().getBoolean("options.use-ssl") + "&autoReconnect=" + configUtil.getDatabaseConfig().getBoolean("options.auto-reconnect");
+        config.setJdbcUrl(dbUrl);
+        config.setUsername(username);
+        config.setPassword(password);
+        config.setMaximumPoolSize(10); // Number of connections in the pool (adjust as needed)
+        config.setConnectionTestQuery("SELECT 1");  // Test query for validating connections
+        config.setIdleTimeout(30000);  // Time before a connection is considered idle
+        config.setMaxLifetime(600000);  // Max lifetime of a connection
+
+        // Initialize the HikariDataSource (connection pool)
+        dataSource = new HikariDataSource(config);
     }
 
     public void dataConnect() {
-        Connection tempConnection = null;
-
-        try {
-            // Initial connection to the MySQL server (without database)
-            String url = "jdbc:mysql://" + host + ":" + port + "/?useSSL=" + useSSL + "&autoReconnect=" + autoReconnect;
-            tempConnection = DriverManager.getConnection(url, username, password);
-            statement = tempConnection.createStatement();
-
+        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
             // Create the database if it doesn't exist
             String sql = "CREATE DATABASE IF NOT EXISTS " + name;
             statement.executeUpdate(sql);
 
             plugin.getLogger().info("Database created or already exists: " + name);
-
-            // Close the initial connection
-            statement.close();
-            tempConnection.close();
-
-            // Reconnect to the specific database
-            String dbUrl = "jdbc:mysql://" + host + ":" + port + "/" + name + "?useSSL=" + useSSL + "&autoReconnect=" + autoReconnect;
-            connection = DriverManager.getConnection(dbUrl, username, password);
-            statement = connection.createStatement();
 
             // Create the table if it doesn't exist
             String sqlTable = """
@@ -71,182 +70,139 @@ public class DataBase {
                         );
                     """;
             statement.execute(sqlTable);
-            statement.close();
-
             plugin.getLogger().info("Table created or already exists: player_data");
 
         } catch (SQLException e) {
-            e.printStackTrace(); // Consider using a logging framework
-        } finally {
-            // Close resources in the finally block
-            try {
-                if (statement != null) statement.close();
-                if (tempConnection != null && !tempConnection.isClosed()) tempConnection.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
+            e.printStackTrace();
         }
     }
 
     public void updatePlayerMoney(String uuid, double money) {
-        try {
-            // SQL query to update the player's money
-            String updateMoneySQL = "UPDATE player_data SET player_money = ? WHERE uuid = ?";
-            // Prepare the statement with the SQL query
-            PreparedStatement preparedStatement = connection.prepareStatement(updateMoneySQL);
-            // Set the money value in the query
+        // SQL query to update the player's money
+        String updateMoneySQL = "UPDATE player_data SET player_money = ? WHERE uuid = ?";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(updateMoneySQL)) {
+
+            // Set values
             preparedStatement.setDouble(1, money);
-            // Set the UUID value in the query
             preparedStatement.setString(2, uuid);
-            // Execute the update query
+
+            // Execute the update
             preparedStatement.executeUpdate();
-            // Close the prepared statement
-            preparedStatement.close();
         } catch (SQLException e) {
-            // Print the stack trace if an SQL exception occurs
-            e.printStackTrace(); // Consider using a logging framework
+            e.printStackTrace();
         }
     }
 
     public void dataDisconnect() {
-        if (connection != null) {
-            try {
-                connection.close();
-                String url = "jdbc:mysql://" + host + ":" + port + "/" + name;
-                plugin.getLogger().info("Database " + url + " disconnected successfully");
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        if (dataSource != null) {
+            dataSource.close(); // Properly close the HikariCP data source
+            plugin.getLogger().info("Database disconnected successfully.");
         }
     }
 
     public PlayerManager playerSearch(String player_name) {
         PlayerManager playerManager = null;
-        try {
-            // Code to search in MySQL
-            String searchSQL = "SELECT * FROM player_data WHERE player_name = ?";
+        String searchSQL = "SELECT * FROM player_data WHERE player_name = ?";
 
-            // Running the code above
-            PreparedStatement preparedStatement = connection.prepareStatement(searchSQL);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(searchSQL)) {
 
-            // Setting the ? in the searchSQL to the playerName
             preparedStatement.setString(1, player_name);
-
-            // Execute the query using the prepared statement
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            // Check if a result is found
             if (resultSet.next()) {
-                // Retrieve data from the result set
                 String uuid = resultSet.getString("uuid");
                 String playerClass = resultSet.getString("player_class");
                 String playerCurrentQuest = resultSet.getString("player_current_quest");
                 boolean playerDoneBefore = resultSet.getBoolean("player_done_before");
                 double playerMoney = resultSet.getDouble("player_money");
 
-                // Create a PlayerManager object with the retrieved data
                 playerManager = new PlayerManager(playerDoneBefore, playerMoney, uuid, playerClass, playerCurrentQuest, player_name);
             }
-
-            // Close the prepared statement and result set for performance after we're finished
-            preparedStatement.close();
             resultSet.close();
-
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
         return playerManager;
     }
 
-
     public void addPlayer(String uuid, String playerName) {
-        try {
-            // Check if the player already exists
-            String checkSQL = "SELECT * FROM player_data WHERE uuid = ?";
-            PreparedStatement checkStatement = connection.prepareStatement(checkSQL);
+        String checkSQL = "SELECT * FROM player_data WHERE uuid = ?";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement checkStatement = connection.prepareStatement(checkSQL)) {
+
             checkStatement.setString(1, uuid);
             ResultSet resultSet = checkStatement.executeQuery();
 
             if (resultSet.next()) {
-                // Player exists, check if the name is different
                 String existingName = resultSet.getString("player_name");
                 if (!existingName.equals(playerName)) {
-                    // Update the player's name
-                    String updateSQL = "UPDATE player_data SET WHERE uuid = ? player_name = ? ";
-                    PreparedStatement updateStatement = connection.prepareStatement(updateSQL);
-                    updateStatement.setString(2, playerName);
-                    updateStatement.setString(1, uuid);
-                    updateStatement.executeUpdate();
-                    updateStatement.close();
+                    String updateSQL = "UPDATE player_data SET player_name = ? WHERE uuid = ?";
+                    try (PreparedStatement updateStatement = connection.prepareStatement(updateSQL)) {
+                        updateStatement.setString(1, playerName);
+                        updateStatement.setString(2, uuid);
+                        updateStatement.executeUpdate();
+                    }
                 }
             } else {
-                // Player does not exist, insert a new record
                 String insertSQL = "INSERT INTO player_data (uuid, player_name, player_class, player_current_quest, player_money, player_done_before) VALUES (?, ?, ?, ?, ?, ?)";
-                PreparedStatement insertStatement = connection.prepareStatement(insertSQL);
-                insertStatement.setString(1, uuid);
-                insertStatement.setString(2, playerName);
-                insertStatement.setString(3, "default"); // Set default class or retrieve from player data
-                insertStatement.setString(4, "NONE"); // Default current quest
-                insertStatement.setDouble(5, 0.0); // Default money
-                insertStatement.setBoolean(6, false); // Default done before
-                insertStatement.executeUpdate();
-                insertStatement.close();
+                try (PreparedStatement insertStatement = connection.prepareStatement(insertSQL)) {
+                    insertStatement.setString(1, uuid);
+                    insertStatement.setString(2, playerName);
+                    insertStatement.setString(3, "default");  // Default class
+                    insertStatement.setString(4, "NONE");    // Default current quest
+                    insertStatement.setDouble(5, 0.0);       // Default money
+                    insertStatement.setBoolean(6, false);    // Default done before
+                    insertStatement.executeUpdate();
+                }
             }
-
-            checkStatement.close();
             resultSet.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-
-    //Update Class for a player
     public void UpdateClass(String class_name, String player_name) {
+        String updateSQL = "UPDATE player_data SET player_class = ? WHERE player_name = ?";
 
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(updateSQL)) {
 
-        try {
-            String insertSQL = "UPDATE player_data SET player_class = ? WHERE player_name = ?";
-
-            PreparedStatement preparedStatement = connection.prepareStatement(insertSQL);
             preparedStatement.setString(1, class_name);
             preparedStatement.setString(2, player_name);
             preparedStatement.executeUpdate();
-            preparedStatement.close();
-
-            } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-
-
     public PlayerManager findStatsByUUID(String uuid) {
-        try {
-            statement = connection.createStatement();
-            String getUUID = "SELECT * FROM player_data WHERE uuid = '" + uuid + "'";
-            ResultSet resultSet = statement.executeQuery(getUUID);
+        String getUUID = "SELECT * FROM player_data WHERE uuid = ?";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(getUUID)) {
+
+            preparedStatement.setString(1, uuid);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                // This gets the info from the database
-                String player_class = resultSet.getString("player_class");
-                String player_name = resultSet.getString("player_name");
-                String player_current_quest = resultSet.getString("player_current_quest");
-                boolean player_done_before = resultSet.getBoolean("player_done_before");
-                double player_money = resultSet.getDouble("player_money");
+                String playerClass = resultSet.getString("player_class");
+                String playerName = resultSet.getString("player_name");
+                String playerCurrentQuest = resultSet.getString("player_current_quest");
+                boolean playerDoneBefore = resultSet.getBoolean("player_done_before");
+                double playerMoney = resultSet.getDouble("player_money");
 
-                PlayerManager playerManager = new PlayerManager(player_done_before, player_money, uuid, player_class, player_current_quest, player_name);
-                statement.close();
-                resultSet.close();
-
-                return playerManager;
+                return new PlayerManager(playerDoneBefore, playerMoney, uuid, playerClass, playerCurrentQuest, playerName);
             } else {
-                plugin.getLogger().severe("Error finding stats for UUID: " + uuid + " @ Database#findStatsByUUID");
-
+                plugin.getLogger().severe("Error finding stats for UUID: " + uuid);
                 return null;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            return null;
         }
     }
 }

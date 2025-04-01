@@ -18,6 +18,9 @@ public class ConfigUtil {
     private File databaseFile;
     private FileConfiguration databaseConfig;
 
+    private File classesFile;
+    private FileConfiguration classesConfig;
+
     private JavaPlugin plugin;
 
     public ConfigUtil(JavaPlugin plugin) {
@@ -26,6 +29,7 @@ public class ConfigUtil {
         loadBosses();
         loadQuests();
         loadDatabase();
+        loadClasses();
     }
 
     private void loadConfig() {
@@ -64,6 +68,15 @@ public class ConfigUtil {
         databaseConfig = YamlConfiguration.loadConfiguration(databaseFile);
     }
 
+    private void loadClasses() {
+        // Load the quests file
+        classesFile = new File(plugin.getDataFolder(), "classes.yml");
+        if (!classesFile.exists()) {
+            plugin.saveResource("classes.yml", false); // Save the default class file if it doesn't exist
+        }
+        classesConfig = YamlConfiguration.loadConfiguration(classesFile);
+    }
+
     public FileConfiguration getConfig() {
         return config;
     }
@@ -77,5 +90,9 @@ public class ConfigUtil {
     }
     public FileConfiguration getDatabaseConfig() {
         return databaseConfig;
+    }
+
+    public FileConfiguration getClassesConfig() {
+        return classesConfig;
     }
 }
