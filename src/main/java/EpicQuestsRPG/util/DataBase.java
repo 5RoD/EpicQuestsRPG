@@ -60,7 +60,6 @@ public class DataBase {
             player_name VARCHAR(50) NOT NULL,
             player_class VARCHAR(50) NOT NULL,
             player_current_quest VARCHAR(255),
-            player_money DOUBLE DEFAULT 0.0,
             player_done_before BOOLEAN DEFAULT FALSE
         );
     """;
@@ -79,23 +78,6 @@ public class DataBase {
     }
 
 
-    public void updatePlayerMoney(String uuid, double money) {
-        // SQL query to update the player's money
-        String updateMoneySQL = "UPDATE player_data SET player_money = ? WHERE uuid = ?";
-
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(updateMoneySQL)) {
-
-            // Set values
-            preparedStatement.setDouble(1, money);
-            preparedStatement.setString(2, uuid);
-
-            // Execute the update
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void dataDisconnect() {
         if (dataSource != null) {
@@ -119,9 +101,8 @@ public class DataBase {
                 String player_class = resultSet.getString("player_class");
                 String player_current_quest = resultSet.getString("player_current_quest");
                 boolean player_done_before = resultSet.getBoolean("player_done_before");
-                double player_money = resultSet.getDouble("player_money");
 
-                playerManager = new PlayerManager(player_done_before, player_money, uuid, player_class, player_current_quest, player_name);
+                playerManager = new PlayerManager(player_done_before, uuid, player_class, player_current_quest, player_name);
             }
             resultSet.close();
         } catch (SQLException e) {
@@ -150,13 +131,12 @@ public class DataBase {
                     }
                 }
             } else {
-                String insertSQL = "INSERT INTO player_data (uuid, player_name, player_class, player_current_quest, player_money, player_done_before) VALUES (?, ?, ?, ?, ?, ?)";
+                String insertSQL = "INSERT INTO player_data (uuid, player_name, player_class, player_current_quest, player_done_before) VALUES (?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement insertStatement = connection.prepareStatement(insertSQL)) {
                     insertStatement.setString(1, uuid);
                     insertStatement.setString(2, playerName);
                     insertStatement.setString(3, "default");  // Default class
                     insertStatement.setString(4, "NONE");    // Default current quest
-                    insertStatement.setDouble(5, 0.0);       // Default money
                     insertStatement.setBoolean(6, false);    // Default done before
                     insertStatement.executeUpdate();
                 }

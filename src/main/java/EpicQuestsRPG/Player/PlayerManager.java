@@ -7,7 +7,6 @@ public class PlayerManager {
 
 
     private boolean player_done_before;
-    private double player_money;
     private String uuid;
     private String player_name;
     private String player_class;
@@ -15,10 +14,9 @@ public class PlayerManager {
 
 
 
-    public PlayerManager(boolean player_done_before, double player_money, String uuid, String player_class, String player_current_quest, String player_name) {
+    public PlayerManager(boolean player_done_before, String uuid, String player_class, String player_current_quest, String player_name) {
         this.player_done_before = player_done_before;
         this.player_name = player_name;
-        this.player_money = player_money;
         this.uuid = uuid;
         this.player_class = player_class;
         this.player_current_quest = player_current_quest;
@@ -30,7 +28,6 @@ public class PlayerManager {
     public String toString() {
         return CC.translate(
                 "&6player_done_before: &e" + player_done_before + "\n" +
-                        "&6player_money: &e" + player_money + "\n" +
                         "&6uuid: &e" + uuid + "\n" +
                         "&6player_name: &e" + player_name + "\n" +
                         "&6player_class: &e" + player_class + "\n" +
@@ -51,13 +48,7 @@ public class PlayerManager {
         this.player_done_before = player_done_before;
     }
 
-    public double getMoney() {
-        return player_money;
-    }
 
-    public void setMoney(double player_money) {
-        this.player_money = player_money;
-    }
 
     public String getUuid() {
         return uuid;

@@ -6,26 +6,32 @@ import EpicQuestsRPG.classes.ChangeClass;
 import EpicQuestsRPG.classes.Mage;
 import EpicQuestsRPG.classes.Warrior;
 import EpicQuestsRPG.commands.Search;
-import EpicQuestsRPG.commands.Eco;
 import EpicQuestsRPG.commands.Gui;
-import EpicQuestsRPG.economy.VaultUtil;
+import EpicQuestsRPG.commands.invalidUsageHandler;
 import EpicQuestsRPG.gui.MenuUtil;
+import EpicQuestsRPG.util.CC;
 import EpicQuestsRPG.util.ConfigUtil;
 import EpicQuestsRPG.util.DataBase;
+import dev.rollczi.litecommands.LiteCommands;
+import dev.rollczi.litecommands.annotations.async.Async;
+import dev.rollczi.litecommands.bukkit.LiteBukkitFactory;
+import dev.rollczi.litecommands.message.LiteMessages;
+import dev.rollczi.litecommands.time.DurationParser;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.time.Duration;
 
 public final class EpicQuestRPG extends JavaPlugin {
 
-    private VaultUtil VaultUtil;
-    private Eco Eco;
     private Gui Gui;
     private DataBase DataBase;
-
     private ChangeClass ChangeClass;
+    private LiteCommands liteCommands;
 
     public DataBase getDataBase() {
         return DataBase;
     }
+
 
     @Override
     public void onEnable() {
@@ -34,54 +40,52 @@ public final class EpicQuestRPG extends JavaPlugin {
         // Register ConfigUtil
         ConfigUtil configUtil = new ConfigUtil(this);
 
-
         // Initialize DataBase with the ConfigUtil and main plugin reference
         this.DataBase = new DataBase(configUtil, this);
 
         // Ensure the table is created on initialization
         DataBase.dataCreate();
 
-        // Database connection is handled automatically by HikariCP, no need for immediate connection call
-        // DataBase.dataConnect(); (not needed anymore since Hikari handles it)
 
-        // Initialize VaultUtil and register commands
-        VaultUtil = new VaultUtil(this); // Pass main plugin reference
-
-        // Initialize MenuUtil
+        // Initialize Commands with other stuff
         MenuUtil menuUtil = new MenuUtil();
-
-        // Initialize Commands
         Gui = new Gui(menuUtil);
-
-        // Initialize Classes with Database
         Warrior warrior = new Warrior(DataBase); // Initialize Warrior
         Mage mage = new Mage(DataBase); // Initialize Mage
         Archer archer = new Archer(configUtil, DataBase); // Initialize Archer
-
-        // Pass instances to ChangeClass
-        ChangeClass = new ChangeClass(warrior, mage, archer);
 
         // Register events and commands
         getServer().getPluginManager().registerEvents(archer, this); // Register Archer events
         getServer().getPluginManager().registerEvents(new PlayerListener(this.getDataBase()), this); // Register PlayerListener
 
-        // Initialize Commands
-        getCommand("eco").setExecutor(Eco);
-        getCommand("ecodeposit").setExecutor(Eco);
-        getCommand("gui").setExecutor(Gui);
-        getCommand("class").setExecutor(ChangeClass); // Set ChangeClass as command executor
-        this.getCommand("search").setExecutor(new Search(DataBase));
+
+// Initialize Commands
+        this.liteCommands = LiteBukkitFactory.builder("EpicQuestsRPG", this)
+                .message(LiteMessages.COMMAND_COOLDOWN, (invocation, cooldownState) -> {
+                    Duration remainingDuration = cooldownState.getRemainingDuration();
+                    String formattedTime = DurationParser.DATE_TIME_UNITS.format(remainingDuration);
+                    return CC.translate("&CPlease wait &a" + formattedTime + " &cbefore using this command again.");
+                })
+
+
+                .commands(new Search(DataBase))
+                .commands(Gui)
+                .commands(new ChangeClass(warrior, mage, archer))
 
 
 
-
-
-
+                .invalidUsage(new invalidUsageHandler())
+                .build();
     }
 
     @Override
     public void onDisable() {
         // Disconnect from the database on server shutdown
         DataBase.dataDisconnect();
+
+        // Unregister liteCommands
+        if (this.liteCommands != null) {
+            this.liteCommands.unregister();
+        }
     }
 }
