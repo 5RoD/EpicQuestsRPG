@@ -23,6 +23,7 @@ public class DataBase {
         this.plugin = plugin;
         getDatabaseInfo();
         setupHikariCP();  // Initialize HikariCP on startup
+        dataCreate();  // Ensure the table is created on initialization
     }
 
     private void getDatabaseInfo() {
@@ -37,7 +38,7 @@ public class DataBase {
     private void setupHikariCP() {
         // Configure HikariCP connection pool
         HikariConfig config = new HikariConfig();
-        String dbUrl = "jdbc:mysql://" + host + ":" + port + "/" + name + "?useSSL=" + configUtil.getDatabaseConfig().getBoolean("options.use-ssl") + "&autoReconnect=" + configUtil.getDatabaseConfig().getBoolean("options.auto-reconnect");
+        String dbUrl = "jdbc:mysql://" + host + ":" + port + "/" + name + "?useSSL=" + configUtil.getDatabaseConfig().getBoolean("options.use-ssl") + "&autoReconnect=" + configUtil.getDatabaseConfig().getBoolean("options.auto-reconnect") + "&allowPublicKeyRetrieval=true";
         config.setJdbcUrl(dbUrl);
         config.setUsername(username);
         config.setPassword(password);
@@ -48,34 +49,35 @@ public class DataBase {
 
         // Initialize the HikariDataSource (connection pool)
         dataSource = new HikariDataSource(config);
+
+
     }
 
-    public void dataConnect() {
-        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
-            // Create the database if it doesn't exist
-            String sql = "CREATE DATABASE IF NOT EXISTS " + name;
-            statement.executeUpdate(sql);
+    public void dataCreate() {
+        String sqlTable = """
+        CREATE TABLE IF NOT EXISTS player_data (
+            uuid VARCHAR(36) PRIMARY KEY,
+            player_name VARCHAR(50) NOT NULL,
+            player_class VARCHAR(50) NOT NULL,
+            player_current_quest VARCHAR(255),
+            player_money DOUBLE DEFAULT 0.0,
+            player_done_before BOOLEAN DEFAULT FALSE
+        );
+    """;
 
-            plugin.getLogger().info("Database created or already exists: " + name);
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
 
-            // Create the table if it doesn't exist
-            String sqlTable = """
-                        CREATE TABLE IF NOT EXISTS player_data (
-                            uuid varchar(36) PRIMARY KEY,
-                            player_name VARCHAR(50) NOT NULL,
-                            player_class VARCHAR(50) NOT NULL,
-                            player_current_quest VARCHAR(255),
-                            player_money DOUBLE DEFAULT 0.0,
-                            player_done_before BOOLEAN DEFAULT FALSE
-                        );
-                    """;
+            plugin.getLogger().info("Trying to create table: player_data...");
             statement.execute(sqlTable);
-            plugin.getLogger().info("Table created or already exists: player_data");
+            plugin.getLogger().info("✅ Table created or already exists.");
 
         } catch (SQLException e) {
+            plugin.getLogger().severe("❌ Failed to create table: " + e.getMessage());
             e.printStackTrace();
         }
     }
+
 
     public void updatePlayerMoney(String uuid, double money) {
         // SQL query to update the player's money
@@ -114,12 +116,12 @@ public class DataBase {
 
             if (resultSet.next()) {
                 String uuid = resultSet.getString("uuid");
-                String playerClass = resultSet.getString("player_class");
-                String playerCurrentQuest = resultSet.getString("player_current_quest");
-                boolean playerDoneBefore = resultSet.getBoolean("player_done_before");
-                double playerMoney = resultSet.getDouble("player_money");
+                String player_class = resultSet.getString("player_class");
+                String player_current_quest = resultSet.getString("player_current_quest");
+                boolean player_done_before = resultSet.getBoolean("player_done_before");
+                double player_money = resultSet.getDouble("player_money");
 
-                playerManager = new PlayerManager(playerDoneBefore, playerMoney, uuid, playerClass, playerCurrentQuest, player_name);
+                playerManager = new PlayerManager(player_done_before, player_money, uuid, player_class, player_current_quest, player_name);
             }
             resultSet.close();
         } catch (SQLException e) {
@@ -179,30 +181,5 @@ public class DataBase {
         }
     }
 
-    public PlayerManager findStatsByUUID(String uuid) {
-        String getUUID = "SELECT * FROM player_data WHERE uuid = ?";
-
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(getUUID)) {
-
-            preparedStatement.setString(1, uuid);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                String playerClass = resultSet.getString("player_class");
-                String playerName = resultSet.getString("player_name");
-                String playerCurrentQuest = resultSet.getString("player_current_quest");
-                boolean playerDoneBefore = resultSet.getBoolean("player_done_before");
-                double playerMoney = resultSet.getDouble("player_money");
-
-                return new PlayerManager(playerDoneBefore, playerMoney, uuid, playerClass, playerCurrentQuest, playerName);
-            } else {
-                plugin.getLogger().severe("Error finding stats for UUID: " + uuid);
-                return null;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 }
+

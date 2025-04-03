@@ -11,42 +11,42 @@ public class MoneyUtil {
         this.plugin = plugin;
     }
 
-    public double getBalance(String uuid) {
-        PlayerManager playerManager = plugin.getDataBase().findStatsByUUID(uuid);
+    public double getBalance(String playerName) {
+        PlayerManager playerManager = plugin.getDataBase().playerSearch(playerName);
         if (playerManager != null) {
             return playerManager.getMoney();
         } else {
-            plugin.getLogger().severe("Could not retrieve balance for UUID: " + uuid);
+            plugin.getLogger().severe("Could not retrieve balance for player: " + playerName);
             return 0.0;
         }
     }
 
-    public boolean deposit(String uuid, double amount) {
-        PlayerManager playerManager = plugin.getDataBase().findStatsByUUID(uuid);
+    public boolean deposit(String playerName, double amount) {
+        PlayerManager playerManager = plugin.getDataBase().playerSearch(playerName);
         if (playerManager != null) {
             double newBalance = playerManager.getMoney() + amount;
-            plugin.getDataBase().updatePlayerMoney(uuid, newBalance);
+            plugin.getDataBase().updatePlayerMoney(playerManager.getUuid(), newBalance);
             return true;
         } else {
-            plugin.getLogger().severe("Could not deposit money for UUID: " + uuid);
+            plugin.getLogger().severe("Could not deposit money for player: " + playerName);
             return false;
         }
     }
 
-    public boolean withdraw(String uuid, double amount) {
-        PlayerManager playerManager = plugin.getDataBase().findStatsByUUID(uuid);
+    public boolean withdraw(String playerName, double amount) {
+        PlayerManager playerManager = plugin.getDataBase().playerSearch(playerName);
         if (playerManager != null) {
             double currentBalance = playerManager.getMoney();
             if (currentBalance >= amount) {
                 double newBalance = currentBalance - amount;
-                plugin.getDataBase().updatePlayerMoney(uuid, newBalance);
+                plugin.getDataBase().updatePlayerMoney(playerManager.getUuid(), newBalance);
                 return true;
             } else {
-                plugin.getLogger().severe("Insufficient funds for UUID: " + uuid);
+                plugin.getLogger().severe("Insufficient funds for player: " + playerName);
                 return false;
             }
         } else {
-            plugin.getLogger().severe("Could not withdraw money for UUID: " + uuid);
+            plugin.getLogger().severe("Could not withdraw money for player: " + playerName);
             return false;
         }
     }

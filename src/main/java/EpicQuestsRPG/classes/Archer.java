@@ -1,20 +1,25 @@
 package EpicQuestsRPG.classes;
 
+import EpicQuestsRPG.Player.PlayerManager;
 import EpicQuestsRPG.util.CC;
 import EpicQuestsRPG.util.ConfigUtil;
 import EpicQuestsRPG.util.DataBase;
 import org.bukkit.Bukkit;
-import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.Material;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static org.bukkit.attribute.Attribute.ATTACK_DAMAGE;
 
 public class Archer implements Listener {
 
@@ -49,12 +54,18 @@ public class Archer implements Listener {
 
         if (archerHash.contains(player_name)) {
             try {
-                player.setHealthScale(health);
 
-                AttributeInstance instance = player.getAttribute(ATTACK_DAMAGE);
-                if (instance != null) {
-                    instance.setBaseValue(damage);
-                }
+                // Apply the Potion effect
+                // Effect level is based on the `damage/health` value from the config
+                int strengthLevel = (int) Math.floor(damage);
+                int healthLevel = (int) Math.floor(health);
+
+                PotionEffect strengthEffect = new PotionEffect(PotionEffectType.STRENGTH, Integer.MAX_VALUE, strengthLevel - 1, false, false);
+                PotionEffect healthEffect = new PotionEffect(PotionEffectType.HEALTH_BOOST, Integer.MAX_VALUE, healthLevel - 1, false, false);
+
+                player.addPotionEffect(strengthEffect);
+                player.addPotionEffect(healthEffect);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -67,9 +78,9 @@ public class Archer implements Listener {
 
         // If the player is not in the hashSet, add them and give them powers
         if (!archerHash.contains(player_name)) {
-            archerHash.add(player_name);
-            archerPowers(player);
+            return;
         }
+        archerHash.add(player_name);
         archerPowers(player);
     }
 
@@ -79,8 +90,13 @@ public class Archer implements Listener {
         Player player = e.getPlayer();
 
         try {
-            var results = dataBase.playerSearch(player_name);
+            PlayerManager results = dataBase.playerSearch(player_name);
             var getClass = results.getPlayer_class();
+
+            // Do nothing if it's not an archer
+            if (!getClass.contains("ARCHER")) {
+                return;
+            }
 
             if (getClass != null && getClass.contains("ARCHER")) {
                 archerHash.add(player_name);
@@ -90,7 +106,36 @@ public class Archer implements Listener {
             ex.printStackTrace();
         }
     }
+    //Unfinished
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent e) {
+        String player_name = e.getPlayer().getName();
+
+        try {
+            archerHash.remove(player_name);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
     // Right Click Ability Archer SOON
     // Shift + Right Click Ability Archer SOON
+    @EventHandler
+    public void onRightClick(PlayerInteractEvent e) {
+        var player_name = e.getPlayer().getName();
+
+        if (!archerHash.contains(player_name)) {
+            return;
+        }
+
+        if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            Player player = e.getPlayer();
+
+            // Check if the player is holding a bow
+            if (player.getInventory().getItemInMainHand().getType() == Material.BOW) {
+                Arrow arrow = player.launchProjectile(Arrow.class);
+                arrow.setVelocity(player.getLocation().getDirection().multiply(2)); // Adjust speed
+            }
+        }
+    }
 }

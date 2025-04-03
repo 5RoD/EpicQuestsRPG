@@ -20,7 +20,7 @@ public final class EpicQuestRPG extends JavaPlugin {
     private Eco Eco;
     private Gui Gui;
     private DataBase DataBase;
-    private Search Search;
+
     private ChangeClass ChangeClass;
 
     public DataBase getDataBase() {
@@ -29,11 +29,17 @@ public final class EpicQuestRPG extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+
         // Register ConfigUtil
         ConfigUtil configUtil = new ConfigUtil(this);
 
+
         // Initialize DataBase with the ConfigUtil and main plugin reference
         this.DataBase = new DataBase(configUtil, this);
+
+        // Ensure the table is created on initialization
+        DataBase.dataCreate();
 
         // Database connection is handled automatically by HikariCP, no need for immediate connection call
         // DataBase.dataConnect(); (not needed anymore since Hikari handles it)
@@ -65,6 +71,12 @@ public final class EpicQuestRPG extends JavaPlugin {
         getCommand("gui").setExecutor(Gui);
         getCommand("class").setExecutor(ChangeClass); // Set ChangeClass as command executor
         this.getCommand("search").setExecutor(new Search(DataBase));
+
+
+
+
+
+
     }
 
     @Override

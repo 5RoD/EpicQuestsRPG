@@ -1,6 +1,9 @@
 package EpicQuestsRPG.classes;
 
 import EpicQuestsRPG.util.CC;
+import net.kyori.adventure.key.Key;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -86,6 +89,13 @@ public class ChangeClass implements CommandExecutor, TabCompleter {
 
         return false;
     }
+//Unfinished
+//    public void defaultPowers(Player player) {
+//        player.setHealthScale(20D);
+//        AttributeInstance attributeInstance = player.getAttribute(Attribute.ATTACK_DAMAGE);
+//        attributeInstance.setBaseValue(2.0D);
+//
+//    }
 
 @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {

@@ -60,10 +60,10 @@
 
     <profiles>
         <profile>
-            <id>ci</id>
+            <id>local</id>
             <activation>
                 <property>
-                    <name>env.GITHUB_ACTIONS</name>
+                    <name>!env.GITHUB_ACTIONS</name>
                 </property>
             </activation>
             <build>
@@ -74,10 +74,20 @@
                         <version>3.5.0</version>
                         <executions>
                             <execution>
-                                <id>skip-exec</id>
-                                <phase>none</phase>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
                             </execution>
                         </executions>
+                        <configuration>
+                            <executable>cmd</executable>
+                            <arguments>
+                                <argument>/c</argument>
+                                <argument>start_server.bat</argument>
+                            </arguments>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
