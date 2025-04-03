@@ -45,17 +45,24 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: RELEASE
+          tag_name: RELEASE-${{ env.COMMIT_HASH }}
           release_name: "Pre-Release ${{ env.COMMIT_HASH }}"
           draft: false
-          prerelease: true  # 👈 This marks it as a pre-release
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete old release assets (optional)
+        run: |
+          release_id=$(gh release view RELEASE-${{ env.COMMIT_HASH }} --json id -q .id)
+          gh release delete $release_id --confirm || echo "No old release to delete"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload JAR to Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: PRE-RELEASE
+          tag_name: RELEASE-${{ env.COMMIT_HASH }}
           files: target/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
