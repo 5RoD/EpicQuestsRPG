@@ -23,17 +23,21 @@ public class ChangeClass {
     private final Warrior warrior;
     private final Mage mage;
     private final Archer archer;
+    private final Default Default;
 
-    public ChangeClass(Warrior warrior, Mage mage, Archer archer) {
+    public ChangeClass(Warrior warrior, Mage mage, Archer archer, Default Default) {
         this.warrior = warrior;
         this.mage = mage;
         this.archer = archer;
+        this.Default = Default;
     }
 
     enum Classes {
         WARRIOR,
         MAGE,
-        ARCHER
+        ARCHER,
+        DEFAULT
+
     }
 
     @Async
@@ -55,6 +59,10 @@ public class ChangeClass {
                 archer.archer(player.getName(), classes.toString());
                 sender.sendMessage(CC.translate("&aYou have selected the Archer class!"));
                 archer.onArcherSelect(player);
+            case DEFAULT:
+                Default.Default(player.getName(), classes.toString());
+                sender.sendMessage(CC.translate("&aYou have selected the Archer class!"));
+                Default.onArcherSelect(player);
                 break;
         }
     }

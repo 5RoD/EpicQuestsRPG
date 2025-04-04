@@ -1,10 +1,7 @@
 package EpicQuestsRPG;
 
 import EpicQuestsRPG.Player.PlayerListener;
-import EpicQuestsRPG.classes.Archer;
-import EpicQuestsRPG.classes.ChangeClass;
-import EpicQuestsRPG.classes.Mage;
-import EpicQuestsRPG.classes.Warrior;
+import EpicQuestsRPG.classes.*;
 import EpicQuestsRPG.commands.Search;
 import EpicQuestsRPG.commands.Gui;
 import EpicQuestsRPG.commands.invalidUsageHandler;
@@ -53,6 +50,7 @@ public final class EpicQuestRPG extends JavaPlugin {
         Warrior warrior = new Warrior(DataBase); // Initialize Warrior
         Mage mage = new Mage(DataBase); // Initialize Mage
         Archer archer = new Archer(configUtil, DataBase); // Initialize Archer
+        Default Default = new Default(DataBase);
 
         // Register events and commands
         getServer().getPluginManager().registerEvents(archer, this); // Register Archer events
@@ -70,7 +68,7 @@ public final class EpicQuestRPG extends JavaPlugin {
 
                 .commands(new Search(DataBase))
                 .commands(Gui)
-                .commands(new ChangeClass(warrior, mage, archer))
+                .commands(new ChangeClass(warrior, mage, archer, Default))
 
 
 

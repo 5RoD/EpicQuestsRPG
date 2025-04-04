@@ -28,28 +28,24 @@ public class Search {
         this.dataBase = dataBase;
     }
 
-   @Execute
+    @Execute
     public void onSearchCommand(@Context CommandSender sender, @Arg Player playerName) {
 
+        StringBuilder sb = new StringBuilder();
+
         var target = playerName.getName();
+        var results = dataBase.playerSearch(target);
 
-
-
-
-        // Check if the player provided a name
-        if (target.isEmpty()) {
-            sender.sendMessage(CC.translate("&cPlease provide a player name to search."));
-            return;
-        }
 
         // Validate and search for the player in the database
-        if (dataBase.playerSearch(target) != null) {
-            sender.sendMessage(CC.translate("&aFound player &e" + playerName + " &ain the database. Their info: \n"
-                    +
-                    dataBase.playerSearch(target).toString()));
+        if (results != null) {
+            sb.append(CC.translate("&aFound player &e"))
+                    .append(target)
+                    .append(CC.translate(" &ain the database. Their info:\n"))
+                    .append(results.toString());
+            sender.sendMessage(sb.toString());
 
-        } else {
-            sender.sendMessage(CC.translate("&cPlayer &e" + playerName + " &cnot found in the database."));
+
         }
     }
 }

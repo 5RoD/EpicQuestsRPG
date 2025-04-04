@@ -48,7 +48,7 @@ jobs:
           tag_name: RELEASE-${{ env.COMMIT_HASH }}
           release_name: "Pre-Release ${{ env.COMMIT_HASH }}"
           draft: false
-          prerelease: true
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
